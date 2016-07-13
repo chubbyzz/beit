@@ -1,0 +1,7 @@
+<h2>Modelos da marca <b><%= @make.name %></b></h2>
+<% link_to '< Voltar', root_path %>
+<ul>
+  <% @make.models.each do |model| %>
+    <li><%= @make.name %> <%= model.name %></li>
+  <% end %>
+</ul>

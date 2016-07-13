@@ -1,0 +1,6 @@
+<%= form_tag show_path , method: 'GET' do %>
+    <p>
+      <%= select_tag 'make', options_for_select(@makes) %>
+    </p>
+    <%= submit_tag "Buscar modelos" %>
+<% end %>
