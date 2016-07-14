@@ -5,6 +5,7 @@ require File.expand_path('../../config/environment', __FILE__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'spec_helper'
 require 'rspec/rails'
+require 'webmock/rspec'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -26,9 +27,16 @@ require 'rspec/rails'
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+WebMock.disable_net_connect!(allow_localhost: true)
+
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
+
+  config.include FactoryGirl::Syntax::Methods
+  config.include(Shoulda::Matchers::ActiveModel, type: :model)
+  config.include(Shoulda::Matchers::ActiveRecord, type: :model)
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
@@ -54,4 +62,15 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+  config.before(:each) do
+    allow($stdout).to receive(:puts)
+
+    models = [{Id: 3445,Nome: "1100",Count: 0,NomeAmigavel: "1100"}, {Id: 2154,Nome: "124",Count: 0,NomeAmigavel: "124"}]
+    stub_request(:post, "http://www.webmotors.com.br/carro/modelos").
+        to_return(:status => 200, :body => models.to_json, :headers => {})
+
+    makes = [{Id: 4,Nome: "FIAT",Count: 0,IsPrincipal: false,Selected: false,NomeAmigavel: "fiat"}, {Id: 2,Nome: "CHEVROLET",Count: 0,IsPrincipal: false,Selected: false,NomeAmigavel: "chevrolet"}]
+    stub_request(:post, "http://www.webmotors.com.br/carro/marcas").
+        to_return(:status => 200, :body => makes.to_json, :headers => {})
+  end
 end

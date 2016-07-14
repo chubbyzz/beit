@@ -24,5 +24,9 @@ group :development do
 end
 
 group :test do
+  gem 'faker'
+  gem 'webmock'
+  gem 'shoulda-matchers', '~> 3.1'
+  gem 'factory_girl_rails'
   gem 'rspec-rails'
 end
